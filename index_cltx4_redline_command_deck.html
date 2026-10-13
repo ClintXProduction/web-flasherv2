@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLTX4 REDLINE // WEB FLASHER</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* CLTX4 REDLINE // visual redesign only — keeps the existing React logic intact */
+    :root { color-scheme: dark; --cltx-red:#ff2638; --cltx-red2:#b70d24; --cltx-cyan:#35e7ff; --cltx-panel:rgba(10,12,20,.91); }
+    html { background:#05060a; }
+    body { background:#05060a !important; color:#dbe3ef !important; }
+    body::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; background:radial-gradient(ellipse at 12% 4%,rgba(255,25,54,.14),transparent 35%),radial-gradient(ellipse at 90% 70%,rgba(53,231,255,.07),transparent 33%),linear-gradient(135deg,#08090e 0%,#090b12 50%,#05060a 100%); }
+    #root { min-height:100vh; }
+    #root > div { isolation:isolate; }
+    header { border-color:rgba(255,38,56,.34) !important; position:relative; }
+    header::after { content:""; position:absolute; bottom:-1px; left:0; width:150px; height:2px; background:linear-gradient(90deg,var(--cltx-red),var(--cltx-cyan),transparent); }
+    h1 { letter-spacing:.055em !important; text-shadow:0 0 24px rgba(255,38,56,.16); }
+    /* Replace former pink palette with CLTX4 red; reserve cyan for focus/high-tech details. */
+    [class*="text-pink-"] { color:#ff5263 !important; }
+    [class*="border-pink-"] { border-color:rgba(255,38,56,.42) !important; }
+    [class*="bg-pink-"] { background-color:#b70d24 !important; }
+    [class*="from-pink-"] { --tw-gradient-from:#ff2638 var(--tw-gradient-from-position) !important; --tw-gradient-to:rgb(255 38 56 / 0%) var(--tw-gradient-to-position) !important; }
+    [class*="to-rose-"] { --tw-gradient-to:#8d1027 var(--tw-gradient-to-position) !important; }
+    [class*="focus:border-pink"]:focus { border-color:var(--cltx-cyan) !important; box-shadow:0 0 0 2px rgba(53,231,255,.13) !important; }
+    [class*="focus:ring-pink"]:focus { --tw-ring-color:rgba(53,231,255,.55) !important; }
+    /* Glass panels get sharper edges, red rim-light, and a subtle angled highlight. */
+    .rounded-3xl { border-radius:22px !important; }
+    .rounded-2xl { border-radius:16px !important; }
+    .rounded-xl { border-radius:12px !important; }
+    .shadow-2xl { box-shadow:0 22px 70px rgba(0,0,0,.42),0 0 0 1px rgba(255,255,255,.018) !important; }
+    .backdrop-blur-md, .backdrop-blur-2xl { backdrop-filter:blur(18px) saturate(125%) !important; }
+    #root .bg-slate-900\/90, #root .bg-slate-900\/95 { background:linear-gradient(145deg,rgba(19,20,30,.96),rgba(8,9,15,.96)) !important; }
+    #root .bg-slate-900\/80 { background:linear-gradient(145deg,rgba(17,19,29,.95),rgba(8,10,16,.96)) !important; }
+    #root .bg-slate-950\/70, #root .bg-slate-950\/50 { background-color:rgba(5,7,13,.7) !important; }
+    #root .border-slate-800 { border-color:rgba(148,163,184,.15) !important; }
+    #root .border-slate-700 { border-color:rgba(148,163,184,.22) !important; }
+    select, input, textarea { accent-color:var(--cltx-red); }
+    #root select, #root input:not([type="file"]), #root textarea { transition:border-color .18s ease, box-shadow .18s ease, background .18s ease; }
+    #root select:focus, #root input:focus, #root textarea:focus { outline:none; border-color:var(--cltx-cyan) !important; box-shadow:0 0 0 2px rgba(53,231,255,.12),0 0 18px rgba(53,231,255,.05); }
+    #root select option { background:#0a0c13; color:#e5e7eb; }
+    #root button { transition:filter .18s ease, transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+    #root button:hover:not(:disabled) { filter:brightness(1.12); }
+    #root button:focus-visible, #root a:focus-visible { outline:2px solid var(--cltx-cyan); outline-offset:3px; }
+    /* Main board/library picker becomes a prominent redline control console. */
+    #root .cltx4-desktop-layout > div.grid > div:first-child > div { box-shadow:inset 0 1px rgba(255,255,255,.025),0 16px 42px rgba(0,0,0,.22); }
+    #root label { letter-spacing:.075em; }
+    #root .font-mono { text-shadow:0 0 9px rgba(53,231,255,.04); }
+    .custom-scrollbar::-webkit-scrollbar { width:8px; height:8px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background:#080a10; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background:linear-gradient(var(--cltx-red),#68101c); border:2px solid #080a10; border-radius:20px; }
+    ::selection { background:rgba(255,38,56,.4); color:white; }
+    @media (max-width:640px) {
+      .cltx4-desktop-layout { padding:14px !important; }
+      header { padding-bottom:20px; }
+      #root .rounded-3xl { border-radius:17px !important; }
+    }
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; } }
+  </style>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="module">
+    window.esptoolPromise = import('https://cdn.jsdelivr.net/npm/esptool-js@0.4.4/+esm');
+  </script>
+</head>
+<body class="bg-slate-950 m-0 p-0 overflow-x-hidden text-slate-300">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // ==========================================
+    // CLTX4 TRANSLATIONS
+    // ==========================================
+    const TRANSLATIONS = {
+      en: {
+        title: "CLTX4 WEB FLASHER",
+        subtitle: "ESP32 Firmware Flasher • School & DIY Projects",
+        donate: "Donate",
+        selectDevice: "Select device to flash",
+        boardType: "Board Type",
+        fwStatus: "Firmware Status",
+        readyLocal: "Ready (Local file)",
+        readyOnline: "Ready (Online)",
+        notConfigured: "Not configured",
+        orChooseLocal: "Or choose local .bin file:",
+        connectUsb: "1. Connect USB",
+        disconnect: "Disconnect",
+        flash: "2. FLASH FIRMWARE",
+        flashing: "FLASHING...",
+        sysLogsTab: "System Logs",
+        devLogsTab: "Serial Monitor",
+        clearLogs: "Clear",
+        waitingDevice: "Waiting for connection...",
+        startMonitor: "Start Monitor",
+        stopMonitor: "Stop Monitor",
+        adminArea: "Admin Area",
+        saveConfig: "Save Config",
+        fwLink: "Firmware Link (.bin)",
+        uiConfig: "UI Configuration",
+        adminGuide: "Guide: Paste direct link to merged .bin firmware.",
+        logoConfig: "Logo URL (IMG_4498.jpeg)",
+        bgConfig: "Background URL (IMG_3027.jpeg)",
+        browserNotSupported: "Flash not supported on mobile",
+        browserNotSupportedDesc: "Web Serial API is only available on Desktop Chrome/Edge. You can still view the UI and configs.",
+        donateTitle: "Support the Creator",
+        donateDesc: "If you like this tool, buy me a coffee. Thank you!",
+        copied: "Copied!",
+        copyQr: "Copy QR string",
+        adminConfirm: "Admin Confirmation",
+        adminDesc: "Enter password to configure Firmware & UI.",
+        password: "Password...",
+        wrongPassword: "Incorrect password!",
+        cancel: "Cancel",
+        unlock: "Unlock",
+        loadingLibrary: "Loading Espressif library...",
+        portAuthorized: "Port authorized. Ready to flash.",
+        connectError: "Connection error",
+        monitorStopped: "Serial Monitor stopped.",
+        monitorStarted: "Serial Monitor started.",
+        errNoFile: "Error: No Firmware file.",
+        prepareFlash: "Preparing to flash...",
+        chipDetected: "Chip detected successfully",
+        flashSuccess: "FLASH SUCCESSFUL!",
+        flashFailed: "Flash failed",
+        disconnected: "Disconnected.",
+        readingFile: "Reading file",
+        downloadingFw: "Downloading Firmware...",
+        syncing: "Syncing...",
+        baudrateTooltip: "Change Baudrate only when disconnected"
+      },
+      fil: {
+        title: "CLTX4 WEB FLASHER",
+        subtitle: "ESP32 Firmware Flasher • Para sa School at DIY Projects",
+        donate: "Donate",
+        selectDevice: "Piliin ang device na i-flash",
+        boardType: "Uri ng Board",
+        fwStatus: "Status ng Firmware",
+        readyLocal: "Handa (Local file)",
+        readyOnline: "Handa (Online)",
+        notConfigured: "Hindi pa naka-configure",
+        orChooseLocal: "O pumili ng lokal na .bin file:",
+        connectUsb: "1. Ikonekta ang USB",
+        disconnect: "Idiskonekta",
+        flash: "2. I-FLASH ANG FIRMWARE",
+        flashing: "NAG-F-FLASH...",
+        sysLogsTab: "System Logs",
+        devLogsTab: "Serial Monitor",
+        clearLogs: "I-clear",
+        waitingDevice: "Naghihintay ng koneksyon...",
+        startMonitor: "Simulan ang Monitor",
+        stopMonitor: "Itigil ang Monitor",
+        adminArea: "Admin Area",
+        saveConfig: "I-save ang Config",
+        fwLink: "Firmware Link (.bin)",
+        uiConfig: "UI Configuration",
+        adminGuide: "Gabay: Idikit ang direct link ng merged .bin firmware.",
+        logoConfig: "Logo URL",
+        bgConfig: "Background URL",
+        browserNotSupported: "Hindi suportado ang pag-flash sa mobile",
+        browserNotSupportedDesc: "Karaniwang kailangan ang desktop Chrome/Edge para sa Web Serial API. Maaari mo pa ring tingnan ang UI at configs.",
+        donateTitle: "Suportahan ang CLTX4",
+        donateDesc: "Kung nakatulong sa iyo ang tool na ito, maaari kang mag-donate sa GCash. Salamat!",
+        copied: "Nakopya!",
+        copyQr: "Kopyahin ang GCash number",
+        adminConfirm: "Admin Confirmation",
+        adminDesc: "Ilagay ang password para i-configure ang firmware at UI.",
+        password: "Password...",
+        wrongPassword: "Mali ang password!",
+        cancel: "Kanselahin",
+        unlock: "I-unlock",
+        loadingLibrary: "Nilo-load ang Espressif library...",
+        portAuthorized: "Pinayagan ang port. Handa nang mag-flash.",
+        connectError: "Error sa koneksyon",
+        monitorStopped: "Huminto ang Serial Monitor.",
+        monitorStarted: "Nagsimula ang Serial Monitor.",
+        errNoFile: "Error: Walang firmware file.",
+        prepareFlash: "Inihahanda ang pag-flash...",
+        chipDetected: "Matagumpay na natukoy ang chip",
+        flashSuccess: "MATAGUMPAY ANG FLASH!",
+        flashFailed: "Nabigo ang pag-flash",
+        disconnected: "Nadiskonekta.",
+        readingFile: "Binabasa ang file",
+        downloadingFw: "Dina-download ang firmware...",
+        syncing: "Sini-sync...",
+        baudrateTooltip: "Palitan ang baud rate kapag disconnected"
+      }
+    };
+
+    const ADMIN_PASSWORD_HASH = "f7671676824aeeede331f069c7865fa19830d4ae359d661c172149b0b8068b25"; 
+    const GITHUB_BASE = "https://clintxproduction.github.io/web-flasherbruce/"; 
+    const GITHUB_REPO_LINK = "https://github.com/ClintXproduction";
+    const DONATE_GCASH = "09661821176";
+
+    // ============================================================
+    // FIRMWARE LIBRARY CATEGORY SETTINGS — edit these descriptions here.
+    // Add a category to INITIAL_FIRMWARE_FAMILIES and give it a description below.
+    // No nested family === 'Name' ? 'description' : ... chains are needed.
+    // ============================================================
+    const INITIAL_FIRMWARE_FAMILIES = [
+      'Bruce Predatory', 'Launcher', 'Marauder', 'Ghost ESP',
+      'ESP8266 Deauther', 'Bw16', 'PorkChopv1', 'Other / Custom'
+    ];
+    const INITIAL_CATEGORY_DESCRIPTIONS = {
+      'Bruce Predatory': '⚡ Explore Bruce firmware builds made for compatible boards, displays, and cyber-deck setups. Select your exact hardware to see matching builds.',
+      'Launcher': '🚀 Browse launcher firmware for supported devices and discover a clean way to switch between compatible tools. Always check the target board before flashing.',
+      'Marauder': '📡 ESP32 Marauder builds for wireless analysis and authorized security labs. Compatible builds appear for the selected board when configured in the library.',
+      'Ghost ESP': '👻 Explore Ghost ESP builds for supported hardware, with board-specific options and firmware notes in one place.',
+      'ESP8266 Deauther': '📶 ESP8266 firmware for educational wireless security testing in authorized lab environments. Choose a compatible ESP8266 target before flashing.',
+      'Bw16': '🔥 BW16 firmware slots for supported development boards. Add a verified firmware URL and assign the exact compatible board in Admin.',
+      'PorkChopv1': '🐷 Discover PorkChopv1 builds and custom firmware options for supported hardware. Check compatibility and installation notes before flashing.',
+      'Other / Custom': '🛠️ A flexible home for custom and experimental builds. Assign compatible board names in Admin so users only see firmware intended for their device.'
+    };
+    const INITIAL_SETTINGS = {
+      bgUrl: GITHUB_BASE + 'IMG_3027.jpeg',
+      logoUrl: GITHUB_BASE + 'IMG_4498.jpeg'
+    };
+
+    const INITIAL_BOARDS = [
+      { id: 'CYD-2432S028', name: 'CYD-2432S028', chip: 'ESP32', family: 'Bruce Predatory', url: 'Bruce-CYD-2432S028.bin' },
+      { id: 'CYD-2USB', name: 'CYD-2USB', chip: 'ESP32', family: 'Bruce Predatory', url: '' },
+      { id: 'CYD-2432W328C', name: 'CYD-2432W328C', chip: 'ESP32', family: 'Bruce Predatory', url: '' },
+      { id: 'CYD-2432W328C_2', name: 'CYD-2432W328C_2', chip: 'ESP32', family: 'Bruce Predatory', url: '' },
+      { id: 'CYD-2432W328R-or-S024R', name: 'CYD-2432W328R-or-S024R', chip: 'ESP32', family: 'Bruce Predatory', url: '' },
+      { id: 'CYD-DIV-v2', name: 'CYD-DIV-v2', chip: 'ESP32', family: 'Bruce Predatory', url: 'CYD-DIV-v2.bin' },
+      // CYD  
+      { id: 'lilygo-t-display-ttgo', name: 'Lilygo T-Display TTGO', chip: 'ESP32', family: 'Bruce Predatory', url: 'Bruce-lilygo-t-display-ttgo.bin' },
+      { id: 'lilygo-t-embed-cc1101', name: 'Lilygo T-Embed CC1101', chip: 'ESP32-S3', family: 'Bruce Predatory', url: 'Bruce-lilygo-t-embed-cc1101.bin' },
+      { id: 'lilygo-t-display-s3', name: 'Lyligo-T-Display-S3', chip: 'ESP32-S3', family: 'Bruce Predatory', url: 'Bruce-lilygo-t-display-s3.bin' },
+      // Lilygo 
+      { id: 'm5stack-cplus1_1', name: 'M5StickC Plus 1.1', chip: 'ESP32', family: 'Bruce Predatory', url: '' },
+      { id: 'm5stack-cplus2', name: 'M5StickC Plus 2', chip: 'ESP32', family: 'Bruce Predatory', url: '' },
+      { id: 'm5stack-cardputer', name: 'M5Stack Cardputer', chip: 'ESP32-S3', family: 'Bruce Predatory', url: '' },
+      // M5-Stack
+      { id: 'xingzhi-cube-s3', name: 'Xingzhi-Cube', chip: 'ESP32-S3', family: 'Bruce Predatory', url: 'Bruce-xingzhi-cube-s3.bin' },
+      { id: 'Launcher-xingzhi-cube-s3', name: 'Launcher-Xingzhi-Cube', chip: 'ESP32-S3', family: 'Launcher', url: 'Launcher-xingzhi-cube-s3.bin' },
+      { id: 'smoochiee-board', name: 'Smoochiee Board', chip: 'ESP32', family: 'Bruce Predatory', url: 'Bruce-smoochiee-board.bin' },
+      { id: 'esp32-c5-tft', name: 'ESP32-C5', chip: 'ESP32-C5', family: 'Bruce Predatory', url: '' },
+      // Additional firmware-library slots. Choose a matching .bin locally or set its direct URL in Admin.
+      { id: 'marauder-cyd', name: 'CYD (Cheap Yellow Display)', chip: 'ESP32', family: 'Marauder', url: '' },
+      { id: 'marauder-esp32', name: 'Generic ESP32 Dev Board', chip: 'ESP32', family: 'Marauder', url: '' },
+      { id: 'marauder-esp32-s3', name: 'ESP32-S3 Board', chip: 'ESP32-S3', family: 'Marauder', url: '' },
+      { id: 'ghost-cyd', name: 'CYD (Cheap Yellow Display)', chip: 'ESP32', family: 'Ghost ESP', url: '' },
+      { id: 'ghost-esp32-s3', name: 'ESP32-S3 Board', chip: 'ESP32-S3', family: 'Ghost ESP', url: '' },
+      { id: 'deauther-esp8266', name: 'ESP8266 Board', chip: 'ESP8266', family: 'ESP8266 Deauther', url: '' },
+      { id: 'custom-firmware', name: 'Custom firmware / any supported board', chip: 'ESP32', family: 'Other / Custom', url: '' },
+    ];
+    
+    function App() {
+      const [lang, setLang] = useState('en');
+      const t = (key) => TRANSLATIONS[lang][key] || TRANSLATIONS.en[key] || key;
+
+      const [isSerialSupported, setIsSerialSupported] = useState(true);
+      const [isConnected, setIsConnected] = useState(false);
+      const [baudRate, setBaudRate] = useState(921600);
+      // User-editable flasher options (kept in this single index.html)
+      const [firmwareFamily, setFirmwareFamily] = useState('');
+      const [firmwareFamilies, setFirmwareFamilies] = useState(['All Firmware', ...INITIAL_FIRMWARE_FAMILIES]);
+      const [categoryDescriptions, setCategoryDescriptions] = useState({ ...INITIAL_CATEGORY_DESCRIPTIONS });
+      const [newFamilyName, setNewFamilyName] = useState('');
+      const [deviceFilter, setDeviceFilter] = useState('All');
+      const [boardSearch, setBoardSearch] = useState('');
+      const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
+      const [flashAddress, setFlashAddress] = useState('0x0');
+      const [eraseAllFlash, setEraseAllFlash] = useState(false); 
+      
+      const [boards, setBoards] = useState(INITIAL_BOARDS);
+      const [selectedBoardId, setSelectedBoardId] = useState('');
+      const getHardwareKey = (board) => `${String(board.name || '').trim().toLowerCase()}::${String(board.chip || '').trim().toLowerCase()}`;
+      const hardwareOptions = Array.from(new Map(boards.map(board => [getHardwareKey(board), {
+        key: getHardwareKey(board), name: String(board.name || 'Unnamed board').trim(), chip: String(board.chip || 'Unknown chip').trim(),
+        ids: boards.filter(item => getHardwareKey(item) === getHardwareKey(board)).map(item => item.id)
+      }])).values());
+      const [selectedHardwareKey, setSelectedHardwareKey] = useState('');
+      const selectedHardware = hardwareOptions.find(item => item.key === selectedHardwareKey) || null;
+      const isFirmwareCompatible = (entry, hardware) => {
+        if (!entry || !hardware) return false;
+        const configured = Array.isArray(entry.supportedBoards)
+          ? entry.supportedBoards
+          : String(entry.supportedBoards || '').split(',');
+        const targets = configured.map(value => String(value).trim().toLowerCase()).filter(Boolean);
+        if (targets.length) {
+          const accepted = [hardware.key, hardware.name.toLowerCase(), ...hardware.ids.map(id => String(id).toLowerCase())];
+          return targets.some(target => accepted.includes(target));
+        }
+        // Safe default: a build supports only its own exact board name + chip unless Admin explicitly adds targets.
+        return getHardwareKey(entry) === hardware.key;
+      };
+      const selectedBoard = boards.find(b => b.id === selectedBoardId);
+
+      const [localFile, setLocalFile] = useState(null);
+      const [githubFirmwareStatus, setGithubFirmwareStatus] = useState('checking');
+      const [githubFirmwareCheckedUrl, setGithubFirmwareCheckedUrl] = useState('');
+      const localFileInputRef = useRef(null);
+      const [bgUrl, setBgUrl] = useState(INITIAL_SETTINGS.bgUrl);
+      const [logoUrl, setLogoUrl] = useState(INITIAL_SETTINGS.logoUrl);
+
+      const [isAdmin, setIsAdmin] = useState(false);
+      const [showAdminModal, setShowAdminModal] = useState(false);
+      const [adminInput, setAdminInput] = useState("");
+      const [adminTab, setAdminTab] = useState('firmware');
+      const [loginError, setLoginError] = useState(false);
+
+      const [showDonateModal, setShowDonateModal] = useState(false);
+      const [copied, setCopied] = useState(false);
+
+      const [logTab, setLogTab] = useState('system');
+      const [sysLogs, setSysLogs] = useState([]);
+      const [devLogs, setDevLogs] = useState([]);
+
+      const [isMonitorRunning, setIsMonitorRunning] = useState(false);
+      const [isFlashing, setIsFlashing] = useState(false);
+      const [progress, setProgress] = useState(0);
+      
+      const terminalRef = useRef(null);
+      const portRef = useRef(null);
+      const transportRef = useRef(null);
+      const readerRef = useRef(null);
+      const isReadingRef = useRef(false);
+
+      useEffect(() => {
+        if (selectedHardwareKey && hardwareOptions.length && !hardwareOptions.some(item => item.key === selectedHardwareKey)) {
+          setSelectedHardwareKey(hardwareOptions[0].key);
+          setFirmwareFamily('');
+          setSelectedBoardId('');
+        }
+      }, [boards, selectedHardwareKey]);
+
+      useEffect(() => {
+        if (!('serial' in navigator)) setIsSerialSupported(false);
+
+        // Fetch IP Geolocation to auto-set language
+        fetch('https://get.geojs.io/v1/ip/country.json')
+          .then(res => res.json())
+          .then(data => {
+            if (data.country === 'PH') setLang('fil');
+            else setLang('en');
+          })
+          .catch(error => console.log('Không check được IP, dùng mặc định:', error));
+
+        const savedConfig = localStorage.getItem('cltx4_web_flasher_config_v1');
+        if (savedConfig) {
+          try {
+            const parsed = JSON.parse(savedConfig);
+            if (parsed.boards) setBoards(parsed.boards.map(b => ({ description: '', supportedBoards: '', ...b })));
+            if (Array.isArray(parsed.firmwareFamilies) && parsed.firmwareFamilies.length) setFirmwareFamilies(['All Firmware', ...parsed.firmwareFamilies.filter(f => f && f !== 'All Firmware')]);
+            if (parsed.categoryDescriptions && typeof parsed.categoryDescriptions === 'object') setCategoryDescriptions({ ...INITIAL_CATEGORY_DESCRIPTIONS, ...parsed.categoryDescriptions });
+            if (parsed.settings) {
+              if (parsed.settings.bgUrl) setBgUrl(parsed.settings.bgUrl);
+              if (parsed.settings.logoUrl) setLogoUrl(parsed.settings.logoUrl);
+            }
+          } catch(e) {}
+        }
+      }, []);
+
+      // Check the selected board's GitHub-hosted firmware independently of local uploads.
+      // A local .bin file must not hide whether the online firmware exists.
+      useEffect(() => {
+        let cancelled = false;
+        const configuredUrl = selectedBoard && selectedHardware && isFirmwareCompatible(selectedBoard, selectedHardware) && selectedBoard.url ? selectedBoard.url.trim() : '';
+        if (!configuredUrl) {
+          setGithubFirmwareStatus('unconfigured');
+          setGithubFirmwareCheckedUrl('');
+          return () => { cancelled = true; };
+        }
+        const url = /^https?:\/\//i.test(configuredUrl)
+          ? configuredUrl
+          : new URL(configuredUrl, GITHUB_BASE).href;
+        setGithubFirmwareStatus('checking');
+        setGithubFirmwareCheckedUrl(url);
+        fetch(url, { method: 'HEAD', cache: 'no-store' })
+          .then(response => {
+            if (cancelled) return;
+            setGithubFirmwareStatus(response.ok ? 'available' : 'missing');
+          })
+          .catch(() => {
+            if (!cancelled) setGithubFirmwareStatus('error');
+          });
+        return () => { cancelled = true; };
+      }, [selectedBoardId, selectedHardwareKey, boards]);
+
+      useEffect(() => {
+        if (terminalRef.current) {
+          terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+        }
+      }, [sysLogs, devLogs, logTab]);
+
+      const addSysLog = (msg, type = 'info') => {
+        setSysLogs(prev => [...prev, { time: new Date().toLocaleTimeString(), msg, type }]);
+      };
+      const addDevLog = (msg) => {
+        setDevLogs(prev => [...prev, { time: new Date().toLocaleTimeString(), msg, type: 'device' }]);
+      };
+
+      const startReadLoop = async (transport) => {
+        isReadingRef.current = true;
+        const currentPort = transport.device;
+        try {
+          while (currentPort.readable) {
+            const reader = currentPort.readable.getReader();
+            readerRef.current = reader;
+            try {
+              while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+                const text = new TextDecoder().decode(value);
+                const lines = text.split('\n');
+                lines.forEach(line => { if (line.trim()) addDevLog(line.trim()); });
+              }
+            } catch (error) { break; } 
+            finally {
+              reader.releaseLock();
+              readerRef.current = null;
+            }
+          }
+        } finally {
+          isReadingRef.current = false;
+        }
+      };
+
+      // =========================================================
+      // CONNECT USB
+      // =========================================================
+      const handleConnect = async () => {
+        if (!isSerialSupported) return;
+        try {
+          if (!window.esptooljs) {
+            addSysLog(t("loadingLibrary"), "info");
+            window.esptooljs = await window.esptoolPromise;
+          }
+          const selectedPort = await navigator.serial.requestPort();
+          portRef.current = selectedPort;
+          setIsConnected(true);
+          addSysLog(t("portAuthorized"), "success");
+        } catch (err) {
+          addSysLog(`${t("connectError")}: ${err.message}`, "error");
+        }
+      };
+
+      const stopMonitor = async () => {
+        if (readerRef.current) await readerRef.current.cancel().catch(()=>{});
+        while (isReadingRef.current) await new Promise(r => setTimeout(r, 50));
+        if (transportRef.current) {
+          await transportRef.current.disconnect().catch(()=>{});
+          transportRef.current = null;
+        }
+        setIsMonitorRunning(false);
+      };
+
+      // =========================================================
+      // START MONITOR
+      // =========================================================
+      const toggleSerialMonitor = async () => {
+        if (isMonitorRunning) {
+          await stopMonitor();
+          addSysLog(t("monitorStopped"), "warning");
+        } else {
+          try {
+            if (!portRef.current) return;
+            const transport = new window.esptooljs.Transport(portRef.current);
+            transportRef.current = transport;
+            await transport.connect(115200); 
+            setIsMonitorRunning(true);
+            setLogTab('device');
+            addSysLog(t("monitorStarted"), "success");
+            startReadLoop(transport);
+          } catch (err) {
+            addSysLog(`${t("monitorError")}: ${err.message}`, "error");
+          }
+        }
+      };
+
+      const handleDisconnect = async () => {
+        await stopMonitor();
+        portRef.current = null;
+        setIsConnected(false);
+        addSysLog(t("disconnected"), "warning");
+      };
+
+      // =========================================================
+      // FLASH FIRMWARE
+      // =========================================================
+      const handleFlash = async () => {
+        if (!selectedBoard?.url && !localFile) return addSysLog(t("errNoFile"), "error");
+        setIsFlashing(true);
+        setProgress(0);
+        setLogTab('system'); 
+
+        try {
+          await stopMonitor();
+          await new Promise(r => setTimeout(r, 500));
+          addSysLog(t("prepareFlash"), 'info');
+
+          let firmwareString;
+          if (localFile) {
+             const reader = new FileReader();
+             firmwareString = await new Promise((res, rej) => {
+                 reader.onload = () => res(reader.result);
+                 reader.onerror = rej;
+                 reader.readAsBinaryString(localFile);
+             });
+          } else {
+             addSysLog(t("downloadingFw"), "warning");
+             const fetchUrl = (selectedBoard.url.startsWith('http')) ? selectedBoard.url : GITHUB_BASE + selectedBoard.url + '?t=' + new Date().getTime();
+             const resp = await fetch(fetchUrl);
+             if (!resp.ok) throw new Error(t("notFoundOnServer"));
+             const blob = await resp.blob();
+             const reader = new FileReader();
+             firmwareString = await new Promise((res, rej) => {
+                 reader.onload = () => res(reader.result);
+                 reader.onerror = rej;
+                 reader.readAsBinaryString(blob);
+             });
+          }
+
+          addSysLog(t("syncing"), "warning");
+          const transport = new window.esptooljs.Transport(portRef.current);
+          const esploader = new window.esptooljs.ESPLoader({
+            transport: transport,
+            baudrate: parseInt(baudRate),
+            romBaudrate: 115200,
+            terminal: { clean: () => {}, writeLine: (msg) => addSysLog(msg), write: (msg) => addSysLog(msg) }
+          });
+
+          await esploader.main();
+          addSysLog(`${t("chipDetected")}`, "success");
+
+          const parsedAddress = Number.parseInt(String(flashAddress).trim().replace(/^0x/i, ''), 16);
+          if (!Number.isFinite(parsedAddress) || parsedAddress < 0) throw new Error('Invalid flash address. Example: 0x0');
+          await esploader.writeFlash({
+            fileArray: [{ data: firmwareString, address: parsedAddress }],
+            flashSize: 'keep',
+            eraseAll: eraseAllFlash,
+            compress: true,
+            reportProgress: (idx, written, total) => setProgress(Math.round((written/total)*100))
+          });
+
+          addSysLog(t("flashSuccess"), "success");
+          await esploader.hardReset();
+          await transport.disconnect().catch(()=>{});
+        } catch (error) {
+          addSysLog(`${t("flashFailed")}: ${error.message}`, "error");
+        } finally {
+          setIsFlashing(false);
+          setProgress(0);
+        }
+      };
+
+      const handleAdminLogin = async (e) => {
+        e.preventDefault();
+        setLoginError(false);
+        try {
+          const msgBuffer = new TextEncoder().encode(adminInput);
+          const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+          const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+          if (hashHex === ADMIN_PASSWORD_HASH) {
+            setIsAdmin(true); setShowAdminModal(false); setAdminInput("");
+          } else setLoginError(true);
+        } catch (error) {}
+      };
+
+      const saveAdminConfig = () => {
+        localStorage.setItem('cltx4_web_flasher_config_v1', JSON.stringify({ boards, firmwareFamilies: firmwareFamilies.filter(f => f !== 'All Firmware'), categoryDescriptions, settings: { bgUrl, logoUrl } }));
+        alert("Saved!"); setIsAdmin(false);
+      };
+
+      const exportAdminConfig = () => {
+        const payload = { app: 'CLTX4 WEB FLASHER', version: 3, exportedAt: new Date().toISOString(), boards, firmwareFamilies: firmwareFamilies.filter(f => f !== 'All Firmware'), categoryDescriptions, settings: { bgUrl, logoUrl } };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'cltx4-flasher-config.json'; a.click();
+        URL.revokeObjectURL(url);
+      };
+
+      // Export a new, ready-to-commit index.html with current Admin edits baked into its defaults.
+      // This lets the owner upload the downloaded HTML to GitHub Pages so every visitor sees the changes.
+      const exportUpdatedIndexHtml = () => {
+        try {
+          // Export the actual app source, not React's currently-rendered UI markup.
+          // Keep the source HTML and scripts intact, but clear the rendered root in the clone.
+          const currentFamilies = firmwareFamilies.filter(f => f && f !== 'All Firmware');
+          const config = {
+            families: currentFamilies,
+            descriptions: categoryDescriptions,
+            boards: boards,
+            settings: { bgUrl, logoUrl }
+          };
+          const sourceClone = document.documentElement.cloneNode(true);
+          const clonedRoot = sourceClone.querySelector('#root');
+          if (clonedRoot) clonedRoot.innerHTML = '';
+          let html = '<!DOCTYPE html>\n' + sourceClone.outerHTML;
+          const replaceDeclaration = (name, value) => {
+            const pattern = new RegExp('const\\s+' + name + '\\s*=\\s*[\\[{][\\s\\S]*?;');
+            if (!pattern.test(html)) throw new Error('Could not locate ' + name + ' in index.html');
+            html = html.replace(pattern, 'const ' + name + ' = ' + JSON.stringify(value, null, 2) + ';');
+          };
+          replaceDeclaration('INITIAL_FIRMWARE_FAMILIES', config.families);
+          replaceDeclaration('INITIAL_CATEGORY_DESCRIPTIONS', config.descriptions);
+          replaceDeclaration('INITIAL_BOARDS', config.boards);
+          replaceDeclaration('INITIAL_SETTINGS', config.settings);
+          // Give the published build a fresh storage key so stale local settings from an older
+          // build cannot override the defaults that were just exported for everyone.
+          const publicStorageKey = 'cltx4_web_flasher_config_public_' + Date.now();
+          html = html.replace(/cltx4_web_flasher_config_[a-zA-Z0-9_]+/g, publicStorageKey);
+          const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+          const downloadUrl = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = downloadUrl;
+          a.download = 'index.html';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+          alert('Updated index.html downloaded! Replace the old index.html in your GitHub repository, then commit/push it to publish these Admin changes for everyone.');
+        } catch (error) {
+          console.error(error);
+          alert('Could not export index.html: ' + error.message + '. You can still export the configuration JSON as a backup.');
+        }
+      };
+
+      const importAdminConfig = (event) => {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const data = JSON.parse(reader.result);
+            if (!Array.isArray(data.boards) || !data.boards.every(b => b && b.id && b.name && b.chip && typeof b.url === 'string')) throw new Error('Invalid board configuration');
+            setBoards(data.boards.map(b => ({ description: '', supportedBoards: '', ...b })));
+            if (Array.isArray(data.firmwareFamilies) && data.firmwareFamilies.length) setFirmwareFamilies(['All Firmware', ...data.firmwareFamilies.filter(f => f && f !== 'All Firmware')]);
+            if (data.categoryDescriptions && typeof data.categoryDescriptions === 'object') setCategoryDescriptions({ ...INITIAL_CATEGORY_DESCRIPTIONS, ...data.categoryDescriptions });
+            if (data.settings) { if (typeof data.settings.bgUrl === 'string') setBgUrl(data.settings.bgUrl); if (typeof data.settings.logoUrl === 'string') setLogoUrl(data.settings.logoUrl); }
+            alert('Configuration imported. Press Save Config to keep it in this browser.');
+          } catch (err) { alert('Could not import this file. Please choose a valid CLTX4 configuration JSON.'); }
+          event.target.value = '';
+        };
+        reader.readAsText(file);
+      };
+
+      const resetAdminConfig = () => {
+        if (!window.confirm('Reset board URLs and appearance settings to the built-in defaults? This will discard unsaved changes.')) return;
+        setBoards(INITIAL_BOARDS.map(b => ({ ...b })));
+        setFirmwareFamilies(['All Firmware', ...INITIAL_FIRMWARE_FAMILIES]);
+        setCategoryDescriptions({ ...INITIAL_CATEGORY_DESCRIPTIONS });
+        setSelectedBoardId(INITIAL_BOARDS[0].id);
+        setBgUrl(INITIAL_SETTINGS.bgUrl);
+        setLogoUrl(INITIAL_SETTINGS.logoUrl);
+        localStorage.removeItem('cltx4_web_flasher_config_v1');
+        alert('Defaults restored. Press Save Config if you want to save the defaults locally.');
+      };
+// EDIT FAMILY NAME 
+// *MUST USE GOOD 👍 NAME 
+      const UserView = (
+        <div className="bg-slate-900/90 backdrop-blur-md border border-pink-400/20 rounded-3xl p-6 shadow-2xl">
+          <div className="flex items-center gap-2 mb-6 text-white font-semibold border-b border-slate-800 pb-4">
+            <i className="fa-solid fa-sliders text-xl text-pink-400"></i>
+            <h2>{t('selectDevice')}</h2>
+          </div>
+          <div className="space-y-5">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-pink-300 uppercase mb-2 tracking-widest">01 · Select Your Hardware Board</label>
+                <select
+                  value={selectedHardware ? selectedHardware.key : ''}
+                  onChange={(e) => {
+                    const nextHardware = hardwareOptions.find(item => item.key === e.target.value);
+                    setSelectedHardwareKey(e.target.value);
+                    setFirmwareFamily('');
+                    setSelectedBoardId('');
+                    setBoardSearch('');
+                    setLocalFile(null);
+                  }}
+                  disabled={isConnected || isFlashing || !hardwareOptions.length}
+                  className="w-full bg-slate-950 border border-pink-500/40 rounded-xl p-3 text-white focus:ring-2 focus:ring-pink-400 outline-none transition-all disabled:opacity-50"
+                >
+                  <option value="">Choose your hardware board…</option>
+                  {hardwareOptions.map(item => <option key={item.key} value={item.key}>{item.name} · {item.chip}</option>)}
+                </select>
+                <p className="text-[11px] text-slate-500 mt-2">Choose the exact hardware first. Only compatible libraries will be listed next.</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-pink-300 uppercase mb-2 tracking-widest">02 · Select Firmware Library</label>
+                <select
+                  value={firmwareFamily}
+                  onChange={(e) => {
+                    const nextFamily = e.target.value;
+                    setFirmwareFamily(nextFamily);
+                    const first = boards.find(b => isFirmwareCompatible(b, selectedHardware) && (b.family || 'Bruce Predatory') === nextFamily);
+                    setSelectedBoardId(first ? first.id : '');
+                    setLocalFile(null);
+                  }}
+                  disabled={!selectedHardware || isConnected || isFlashing}
+                  className="w-full bg-slate-950 border border-pink-500/40 rounded-xl p-3 text-white focus:ring-2 focus:ring-pink-400 outline-none transition-all disabled:opacity-50"
+                >
+                  <option value="">Choose a firmware library…</option>
+                  {firmwareFamilies.filter(family => family !== 'All Firmware' && boards.some(b => isFirmwareCompatible(b, selectedHardware) && (b.family || 'Bruce Predatory') === family)).map(family => (
+                    <option key={family} value={family}>{family}</option>
+                  ))}
+                </select>
+                {firmwareFamily && <p className="text-[11px] text-slate-400 mt-2">{categoryDescriptions[firmwareFamily] || 'Select a firmware build from this library below.'}</p>}
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-pink-300 uppercase mb-2 tracking-widest">03 · Select Firmware (.bin)</label>
+                <input type="search" value={boardSearch} onChange={e => setBoardSearch(e.target.value)}
+                  placeholder="Search firmware builds…"
+                  disabled={!firmwareFamily || isConnected || isFlashing}
+                  className="w-full mb-3 bg-slate-950 border border-slate-700 rounded-xl p-3 text-white text-sm outline-none focus:border-pink-400 disabled:opacity-50" />
+                <select
+                  value={selectedBoardId}
+                  onChange={(e) => { setSelectedBoardId(e.target.value); setLocalFile(null); }}
+                  disabled={!firmwareFamily || isConnected || isFlashing}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white focus:ring-2 focus:ring-pink-400 outline-none transition-all disabled:opacity-50"
+                >
+                  <option value="">{!selectedHardware ? 'Select hardware first' : !firmwareFamily ? 'Select a library first…' : 'Choose a firmware .bin…'}</option>
+                  {boards.filter(b => {
+                    const matchesFamily = (b.family || 'Bruce Predatory') === firmwareFamily;
+                    const matchesSearch = `${b.name} ${b.chip} ${b.id} ${b.family || 'Bruce Predatory'} ${b.description || ''}`.toLowerCase().includes(boardSearch.toLowerCase());
+                    return !!firmwareFamily && matchesFamily && matchesSearch && isFirmwareCompatible(b, selectedHardware);
+                  }).map(b => <option key={b.id} value={b.id}>{b.name} · {b.chip} · {b.url ? '.bin available' : 'local .bin needed'}</option>)}
+                </select>
+                {selectedHardware && firmwareFamily && !boards.some(b => isFirmwareCompatible(b, selectedHardware) && (b.family || 'Bruce Predatory') === firmwareFamily && `${b.name} ${b.chip} ${b.id} ${b.description || ''}`.toLowerCase().includes(boardSearch.toLowerCase())) && <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-200"><i className="fa-solid fa-triangle-exclamation mr-2"></i>No firmware builds are configured for this board and library. Admin can add a compatible build and its .bin URL.</div>}
+              </div>
+            </div>
+            <div className="bg-slate-950/50 p-4 rounded-xl border border-slate-800/50 flex flex-col gap-4">
+              <div className="flex items-center gap-3">
+                <i className={`fa-solid ${localFile || (selectedBoard && selectedBoard.url) ? 'fa-circle-check text-emerald-500' : 'fa-circle-xmark text-rose-500'} text-2xl shrink-0`}></i>
+                <div>
+                  <p className="text-sm font-medium text-slate-200">{t('fwStatus')}</p>
+                  <p className="text-[11px] text-pink-300 mt-1">Board: {selectedHardware ? `${selectedHardware.name} · ${selectedHardware.chip}` : 'No board selected'}</p>
+                  <p className="text-[11px] text-slate-400 mt-1">Library: {selectedBoard?.family || firmwareFamily}</p>
+                  <p className="text-xs text-slate-300 mt-0.5">
+                    {localFile ? `LOCAL FILE: ${localFile.name}` : (lang === 'fil' ? 'Walang lokal na file na napili' : 'No local file selected')}
+                  </p>
+                  <p className={`text-xs mt-1 ${githubFirmwareStatus === 'available' ? 'text-emerald-400' : githubFirmwareStatus === 'missing' ? 'text-rose-400' : githubFirmwareStatus === 'checking' ? 'text-amber-300' : 'text-slate-500'}`}>
+                    {githubFirmwareStatus === 'checking' ? 'GITHUB: Checking firmware file…' :
+                     githubFirmwareStatus === 'available' ? 'GITHUB: Firmware file found ✅' :
+                     githubFirmwareStatus === 'missing' ? 'GITHUB: Firmware file NOT FOUND ❌' :
+                     githubFirmwareStatus === 'error' ? 'GITHUB: Could not verify (network/CORS error)' :
+                     'GITHUB: No firmware URL configured — choose a local .bin or configure URL in Admin'}
+                  </p>
+                  {githubFirmwareCheckedUrl && <p className="text-[10px] text-slate-600 mt-1 break-all">{githubFirmwareCheckedUrl}</p>}
+                </div>
+              </div>
+              <div className="border-t border-slate-800/50 pt-3">
+                <label className="block text-xs font-medium text-slate-400 mb-2">{t('orChooseLocal')}</label>
+                <input
+                  ref={localFileInputRef}
+                  type="file"
+                  accept=".bin,application/octet-stream,application/binary"
+                  className="hidden"
+                  onChange={(e) => {
+                    const chosenFile = e.target.files && e.target.files[0];
+                    if (chosenFile) setLocalFile(chosenFile);
+                    // Let users select the same file again if needed.
+                    e.target.value = '';
+                  }}
+                />
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => localFileInputRef.current && localFileInputRef.current.click()}
+                    disabled={isFlashing}
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-pink-400/10 px-4 py-2 text-xs font-bold text-pink-400 hover:bg-pink-400/20 cursor-pointer disabled:opacity-50"
+                  >
+                    <i className="fa-solid fa-folder-open"></i>
+                    {lang === 'fil' ? 'Pumili ng File' : 'Choose File'}
+                  </button>
+                  <span className="min-w-0 break-all text-xs text-slate-400">
+                    {localFile ? localFile.name : (lang === 'fil' ? 'Walang napiling file' : 'No file chosen')}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-xl border border-slate-800 bg-slate-950/70 overflow-hidden">
+              <button type="button" onClick={() => setShowAdvancedOptions(v => !v)} className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-900">
+                <span className="font-bold text-sm text-white"><i className="fa-solid fa-sliders text-pink-400 mr-2"></i>Advanced Flash Options</span>
+                <i className={`fa-solid ${showAdvancedOptions ? 'fa-chevron-up' : 'fa-chevron-down'} text-slate-400`}></i>
+              </button>
+              {showAdvancedOptions && <div className="p-4 pt-0 space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 mb-2">Flash Address</label>
+                  <input value={flashAddress} onChange={e => setFlashAddress(e.target.value)} disabled={isFlashing}
+                    placeholder="0x0" className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm text-white font-mono outline-none focus:border-pink-400" />
+                  <p className="text-[11px] text-slate-500 mt-1">Merged/factory firmware commonly uses 0x0. Use the address specified by your firmware provider.</p>
+                </div>
+                <label className="flex items-start gap-3 cursor-pointer rounded-lg border border-rose-500/20 bg-rose-500/5 p-3">
+                  <input type="checkbox" checked={eraseAllFlash} onChange={e => setEraseAllFlash(e.target.checked)} disabled={isFlashing} className="mt-1 accent-rose-500" />
+                  <span><span className="block text-sm font-bold text-rose-300">Erase all flash before writing</span><span className="block text-[11px] text-slate-400 mt-1">Destructive: removes existing data and settings. Enable only when required by your firmware.</span></span>
+                </label>
+              </div>}
+            </div>
+            <div className="pt-4 space-y-3">
+              {!isConnected ? (
+                <div className="flex gap-2">
+                  <button onClick={handleConnect} disabled={!isSerialSupported} className={`flex-1 flex items-center justify-center gap-2 font-medium py-3 px-4 rounded-xl transition-colors border shadow-lg ${isSerialSupported ? 'bg-slate-800 hover:bg-slate-700 text-white border-slate-700' : 'bg-slate-900 text-slate-600 border-slate-800 cursor-not-allowed'}`}>
+                    <i className="fab fa-usb text-xl"></i>{t('connectUsb')}
+                  </button>
+                  <select value={baudRate} onChange={(e) => setBaudRate(e.target.value)} disabled={isFlashing} className="bg-slate-950 border border-slate-700 rounded-xl px-3 text-sm text-slate-300 outline-none w-32 shadow-lg disabled:opacity-50 focus:border-pink-400">
+                    <option value="115200">115200</option>
+                    <option value="230400">230400</option>
+                    <option value="460800">460800</option>
+                    <option value="921600">921600</option>
+                    <option value="1500000">1500000</option>
+                  </select>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <button onClick={handleDisconnect} disabled={isFlashing} className="flex-1 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 px-4 rounded-xl transition-colors disabled:opacity-50 border border-slate-700 shadow-lg">
+                    <i className="fa-solid fa-plug-circle-xmark text-xl text-pink-400"></i>{t('disconnect')}
+                  </button>
+                  <select value={baudRate} onChange={(e) => setBaudRate(e.target.value)} disabled={isFlashing} className="bg-slate-950 border border-slate-700 rounded-xl px-3 text-sm text-slate-300 outline-none w-32 shadow-lg disabled:opacity-50 focus:border-pink-400">
+                    <option value="115200">115200</option>
+                    <option value="230400">230400</option>
+                    <option value="460800">460800</option>
+                    <option value="921600">921600</option>
+                    <option value="1500000">1500000</option>
+                  </select>
+                </div>
+              )}
+              <button 
+                onClick={handleFlash}
+                disabled={!isConnected || isFlashing || (!selectedBoard?.url && !localFile) || !isSerialSupported}
+                className={`w-full flex items-center justify-center gap-2 font-bold py-4 px-4 rounded-xl transition-all duration-300 relative overflow-hidden shadow-xl ${
+                  (!isConnected || isFlashing || (!selectedBoard?.url && !localFile))
+                    ? 'bg-slate-800 text-slate-500' 
+                    : 'bg-pink-500 text-white hover:bg-pink-400 shadow-[0_0_20px_rgba(236,72,153,0.4)] border border-pink-400'
+                }`}
+              >
+                <i className={`fa-solid fa-play text-xl ${isFlashing ? 'animate-pulse' : ''}`}></i>
+                {isFlashing ? `${t('flashing')} ${progress}%` : t('flash')}
+                {isFlashing && <div className="absolute left-0 bottom-0 top-0 bg-white/20 transition-all duration-300 pointer-events-none" style={{ width: `${progress}%` }} />}
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+
+      const [adminSearch, setAdminSearch] = useState('');
+      const addFirmwareFamily = () => { const name = newFamilyName.trim(); if (!name || name === 'All Firmware' || firmwareFamilies.some(f => f.toLowerCase() === name.toLowerCase())) return; setFirmwareFamilies(prev => [...prev, name]); setNewFamilyName(''); };
+      const renameFirmwareFamily = (oldName, newName) => { const name = newName.trim(); if (!name || name === 'All Firmware') return; setFirmwareFamilies(prev => prev.map(f => f === oldName ? name : f)); setBoards(prev => prev.map(b => b.family === oldName ? { ...b, family: name } : b)); setCategoryDescriptions(prev => { const next = { ...prev }; if (next[oldName] !== undefined) { next[name] = next[oldName]; delete next[oldName]; } return next; }); };
+      const deleteFirmwareFamily = name => { if (name === 'All Firmware') return; if (boards.some(b => b.family === name) && !window.confirm('Delete category ' + name + '? Entries in it will be moved to Other / Custom.')) return; setFirmwareFamilies(prev => prev.filter(f => f !== name)); setBoards(prev => prev.map(b => b.family === name ? { ...b, family: 'Other / Custom' } : b)); };
+      const [adminFamilyFilter, setAdminFamilyFilter] = useState('All Firmware');
+      const updateBoard = (id, patch) => setBoards(prev => prev.map(b => b.id === id ? { ...b, ...patch } : b));
+      const addBoard = () => setBoards(prev => [...prev, { id: 'custom-' + Date.now().toString(36), name: 'New Board', chip: 'ESP32', family: 'Other / Custom', url: '', description: '' }]);
+      const duplicateBoard = board => setBoards(prev => [...prev, { ...board, id: 'copy-' + Date.now().toString(36), name: board.name + ' Copy' }]);
+      const deleteBoard = board => {
+        if (!window.confirm(`Delete "${board.name}" from the firmware library?`)) return;
+        setBoards(prev => prev.filter(b => b.id !== board.id));
+        if (selectedBoardId === board.id) { const replacement = boards.find(b => b.id !== board.id); if (replacement) setSelectedBoardId(replacement.id); }
+      };
+      const adminFamilies = ['All Firmware', ...Array.from(new Set(boards.map(b => b.family || 'Bruce Predatory')))];
+      const adminFilteredBoards = boards.filter(board => {
+        const family = board.family || 'Bruce Predatory', q = adminSearch.toLowerCase().trim();
+        return (adminFamilyFilter === 'All Firmware' || family === adminFamilyFilter) &&
+          `${board.name} ${board.id} ${board.chip} ${family} ${board.description || ''} ${board.url || ''}`.toLowerCase().includes(q);
+      });
+
+      const AdminView = (
+        <div className="bg-slate-900/95 backdrop-blur-md border border-pink-500/50 rounded-3xl shadow-2xl flex flex-col max-h-[850px] overflow-hidden">
+          <div className="flex items-center justify-between gap-3 p-5 border-b border-slate-800 bg-slate-900 shrink-0">
+            <div className="flex items-center gap-2 text-pink-400 font-bold"><i className="fa-solid fa-lock text-lg"></i><h2>{t('adminArea')}</h2></div>
+            <button onClick={saveAdminConfig} className="bg-pink-600 hover:bg-pink-500 text-white px-4 py-2 rounded-lg text-sm font-medium"><i className="fa-solid fa-floppy-disk mr-2"></i>{t('saveConfig')}</button>
+          </div>
+          <div className="grid grid-cols-3 gap-2 p-3 bg-slate-950/70 border-b border-slate-800 text-center">
+            <div className="rounded-lg bg-slate-900 p-2"><b className="block text-white text-lg">{boards.length}</b><span className="text-[10px] text-slate-400">Boards</span></div>
+            <div className="rounded-lg bg-slate-900 p-2"><b className="block text-emerald-400 text-lg">{boards.filter(b => b.url && b.url.trim()).length}</b><span className="text-[10px] text-slate-400">Online links</span></div>
+            <div className="rounded-lg bg-slate-900 p-2"><b className="block text-amber-300 text-lg">{boards.filter(b => !b.url || !b.url.trim()).length}</b><span className="text-[10px] text-slate-400">Local / missing</span></div>
+          </div>
+          <div className="flex border-b border-slate-800 shrink-0 bg-slate-950/50 text-xs sm:text-sm font-medium">
+            <button onClick={() => setAdminTab('firmware')} className={`flex-1 py-3 ${adminTab === 'firmware' ? 'bg-slate-800 text-pink-400 border-b-2 border-pink-500' : 'text-slate-400'}`}><i className="fa-solid fa-microchip mr-1"></i> Boards & Firmware</button>
+            <button onClick={() => setAdminTab('library')} className={`flex-1 py-3 ${adminTab === 'library' ? 'bg-slate-800 text-pink-400 border-b-2 border-pink-500' : 'text-slate-400'}`}>Library Options</button>
+            <button onClick={() => setAdminTab('ui')} className={`flex-1 py-3 ${adminTab === 'ui' ? 'bg-slate-800 text-pink-400 border-b-2 border-pink-500' : 'text-slate-400'}`}>{t('uiConfig')}</button>
+            <button onClick={() => setAdminTab('tools')} className={`flex-1 py-3 ${adminTab === 'tools' ? 'bg-slate-800 text-pink-400 border-b-2 border-pink-500' : 'text-slate-400'}`}>Tools</button>
+          </div>
+          <div className="overflow-y-auto p-4 sm:p-5 custom-scrollbar flex-1 bg-slate-900/50">
+            {adminTab === 'firmware' ? (
+              <div className="space-y-4">
+                <div className="sticky top-0 z-10 bg-slate-900/95 pb-3 space-y-2">
+                  <button onClick={addBoard} className="w-full rounded-xl p-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm"><i className="fa-solid fa-plus mr-2"></i>Add Board / Firmware Entry</button>
+                  <input value={adminSearch} onChange={e => setAdminSearch(e.target.value)} placeholder="Search name, chip, category, description, URL..." className="w-full bg-slate-950 border border-slate-700 text-white text-sm rounded-xl px-3 py-3 outline-none focus:border-pink-400" />
+                  <select value={adminFamilyFilter} onChange={e => setAdminFamilyFilter(e.target.value)} className="w-full bg-slate-950 border border-slate-700 text-slate-200 text-sm rounded-xl px-3 py-3 outline-none focus:border-pink-400">{adminFamilies.map(f => <option key={f} value={f}>{f}</option>)}</select>
+                  <p className="text-[11px] text-slate-500">Each board's details, firmware category, description, and .bin link are grouped together.</p>
+                </div>
+                {adminFilteredBoards.map(board => (
+                  <div key={board.id} className="bg-slate-950 p-4 rounded-2xl border border-slate-700 space-y-3">
+                    <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                      <div className="min-w-0"><p className="text-[10px] uppercase tracking-widest text-pink-400 font-bold">{board.family || 'Bruce Predatory'}</p><p className="text-sm font-bold text-white truncate">{board.name}</p><p className="text-[10px] text-slate-500 font-mono break-all">ID: {board.id}</p></div>
+                      <div className="flex gap-1 shrink-0"><button title="Duplicate entry" onClick={() => duplicateBoard(board)} className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200"><i className="fa-regular fa-copy"></i></button><button title="Delete entry" onClick={() => deleteBoard(board)} className="w-8 h-8 rounded-lg bg-rose-950 hover:bg-rose-900 text-rose-300"><i className="fa-solid fa-trash"></i></button></div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <label className="text-[10px] uppercase tracking-wider text-slate-400">Board display name<input value={board.name} onChange={e => updateBoard(board.id, { name: e.target.value })} className="mt-1 w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 normal-case tracking-normal" /></label>
+                      <label className="text-[10px] uppercase tracking-wider text-slate-400">Chip / board type<input value={board.chip} onChange={e => updateBoard(board.id, { chip: e.target.value })} placeholder="ESP32-S3" className="mt-1 w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 normal-case tracking-normal" /></label>
+                      <label className="text-[10px] uppercase tracking-wider text-slate-400">Firmware category<input value={board.family || ''} onChange={e => updateBoard(board.id, { family: e.target.value })} placeholder="Bruce Predatory / Launcher / Marauder..." className="mt-1 w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 normal-case tracking-normal" /></label>
+                      <label className="text-[10px] uppercase tracking-wider text-slate-400">Firmware .bin URL / filename<input value={board.url || ''} onChange={e => updateBoard(board.id, { url: e.target.value })} placeholder="https://... or Bruce-board.bin" className="mt-1 w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 normal-case tracking-normal" /></label>
+                      <label className="text-[10px] uppercase tracking-wider text-slate-400 sm:col-span-2">Compatible board IDs / names <span className="normal-case tracking-normal text-pink-400">(comma-separated, optional)</span><input value={Array.isArray(board.supportedBoards) ? board.supportedBoards.join(', ') : (board.supportedBoards || '')} onChange={e => updateBoard(board.id, { supportedBoards: e.target.value })} placeholder="Leave blank for this exact board only, or enter: CYD-2432S028, CYD (Cheap Yellow Display)" className="mt-1 w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 normal-case tracking-normal" /><span className="block mt-1 normal-case tracking-normal text-slate-500">Use the exact board display name, board ID, or generated board key. Only assign a board if the firmware build truly supports it.</span></label>
+                    </div>
+                    <label className="block text-[10px] uppercase tracking-wider text-slate-400">Firmware description <span className="text-pink-400 normal-case tracking-normal">— grouped with board settings</span><textarea rows="2" value={board.description || ''} onChange={e => updateBoard(board.id, { description: e.target.value })} placeholder="Features, supported display, version, notes..." className="mt-1 w-full resize-y bg-slate-900 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 normal-case tracking-normal" /></label>
+                    <div className="flex items-center justify-between gap-2 text-[10px] text-slate-500"><span className="break-all">ID: {board.id}</span><span className={board.url && board.url.trim() ? 'text-emerald-400' : 'text-amber-300'}>{board.url && board.url.trim() ? 'URL configured' : 'Local file / URL needed'}</span></div>
+                  </div>
+                ))}
+                {adminFilteredBoards.length === 0 && <div className="text-center text-sm text-slate-500 py-8">No entries match your search/filter.</div>}
+              </div>
+            ) : adminTab === 'library' ? (
+              <div className="space-y-4">
+                <div className="rounded-xl border border-pink-500/30 bg-pink-500/5 p-4"><h3 className="font-bold text-white mb-1">Firmware Library Categories</h3><p className="text-xs text-slate-400">Add or rename options shown in the main Firmware Library. Everything is inside this index.html; use Save Config to store changes in this browser.</p></div>
+                <div className="flex gap-2"><input value={newFamilyName} onChange={e => setNewFamilyName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') addFirmwareFamily(); }} placeholder="New option e.g. ESP32 Marauder" className="min-w-0 flex-1 bg-slate-950 border border-slate-700 text-white text-sm rounded-xl px-3 py-3"/><button onClick={addFirmwareFamily} className="rounded-xl bg-emerald-600 px-4 py-3 text-white font-bold"><i className="fa-solid fa-plus mr-1"></i>Add</button></div>
+                {firmwareFamilies.filter(f => f !== 'All Firmware').map(family => <div key={family} className="rounded-xl border border-slate-700 bg-slate-950 p-3 space-y-2"><div className="flex items-center gap-2"><div className="min-w-0 flex-1"><p className="text-sm font-bold text-white">{family}</p><p className="text-[10px] text-slate-500">{boards.filter(b => (b.family || 'Bruce Predatory') === family).length} board/firmware entries</p></div><button onClick={() => { const value = window.prompt('Rename firmware category:', family); if (value !== null) renameFirmwareFamily(family, value); }} title="Rename category" className="rounded-lg bg-slate-800 px-3 py-2 text-pink-300"><i className="fa-solid fa-pen"></i></button><button onClick={() => deleteFirmwareFamily(family)} title="Delete category" className="rounded-lg bg-rose-950 px-3 py-2 text-rose-300"><i className="fa-solid fa-trash"></i></button></div><label className="block text-[10px] uppercase tracking-wider text-slate-400">Category card description<textarea rows="2" value={categoryDescriptions[family] || ''} onChange={e => setCategoryDescriptions(prev => ({ ...prev, [family]: e.target.value }))} placeholder="Short description shown under this category on the main page" className="mt-1 w-full resize-y bg-slate-900 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 normal-case tracking-normal" /></label></div>)}
+              </div>
+            ) : adminTab === 'ui' ? (
+              <div className="space-y-6">
+                <div><label className="block text-xs font-medium text-slate-400 mb-2">{t('logoConfig')}</label><input type="text" placeholder="URL..." value={logoUrl} onChange={e => setLogoUrl(e.target.value)} className="w-full bg-slate-950 border border-slate-700 text-slate-300 text-sm rounded-lg px-3 py-2.5 outline-none focus:border-pink-400" /></div>
+                <div><label className="block text-xs font-medium text-slate-400 mb-2">{t('bgConfig')}</label><input type="text" placeholder="URL..." value={bgUrl} onChange={e => setBgUrl(e.target.value)} className="w-full bg-slate-950 border border-slate-700 text-slate-300 text-sm rounded-lg px-3 py-2.5 outline-none focus:border-pink-400" /></div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="bg-slate-950 border border-slate-800 rounded-xl p-4"><p className="text-white font-bold mb-1">Configuration overview</p><p className="text-xs text-slate-400">{boards.length} boards • {adminFamilies.length - 1} firmware categories • {boards.filter(b => b.url && b.url.trim()).length} configured links</p></div>
+                <button onClick={exportUpdatedIndexHtml} className="w-full rounded-xl p-3 bg-pink-600 hover:bg-pink-500 text-white font-bold text-sm"><i className="fa-solid fa-file-code mr-2"></i>Export Updated index.html for GitHub</button>
+                <p className="text-xs leading-relaxed text-slate-400">This downloads a new index.html with your current boards, firmware categories, descriptions, compatibility assignments, and appearance settings built in. Upload it to your GitHub repository to publish your edits to every visitor.</p>
+                <button onClick={exportAdminConfig} className="w-full rounded-xl p-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm"><i className="fa-solid fa-file-export mr-2 text-pink-400"></i>Export configuration JSON backup</button>
+                <label className="block w-full rounded-xl p-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm text-center cursor-pointer"><i className="fa-solid fa-file-import mr-2 text-pink-400"></i>Import configuration JSON<input type="file" accept=".json,application/json" onChange={importAdminConfig} className="hidden" /></label>
+                <button onClick={resetAdminConfig} className="w-full rounded-xl p-3 bg-rose-950/70 hover:bg-rose-900 border border-rose-800 text-rose-200 font-bold text-sm"><i className="fa-solid fa-rotate-left mr-2"></i>Reset defaults</button>
+                <p className="text-xs leading-relaxed text-amber-300/90">Save Config stores changes in this browser. Use Export Updated index.html for GitHub to make your edits public after committing the downloaded file. Export a JSON backup before clearing browser data. Admin login is client-side only, not secure server-side access control.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+
+      const currentLogs = logTab === 'system' ? sysLogs : devLogs;
+
+      return (
+        <div 
+          className="min-h-screen bg-[#020617] text-slate-300 font-sans relative transition-all duration-500"
+          style={{ backgroundImage: bgUrl ? `url(${bgUrl})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}
+        >
+          <div className={`absolute inset-0 z-0 pointer-events-none transition-colors duration-500 ${bgUrl ? 'bg-slate-950/85 backdrop-blur-sm' : 'bg-transparent'}`}></div>
+
+          <div className="max-w-7xl mx-auto space-y-6 relative z-10 p-4 md:p-8 cltx4-desktop-layout cltx-command-deck">
+            
+            {!isSerialSupported && (
+              <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-2xl flex items-center gap-3 animate-pulse">
+                <i className="fa-solid fa-mobile-screen text-amber-500"></i>
+                <div className="text-[11px] sm:text-xs text-amber-200">
+                  <p className="font-bold">{t('browserNotSupported')}</p>
+                  <p className="opacity-80">{t('browserNotSupportedDesc')}</p>
+                </div>
+              </div>
+            )}
+
+            <header className="cltx-header flex flex-col md:flex-row items-start sm:items-center justify-between gap-6 border-b border-pink-400/20 pb-8">
+              <div className="flex items-center gap-5">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-pink-500/20 rounded-2xl flex items-center justify-center shadow-[0_0_15px_rgba(236,72,153,0.2)] border border-pink-400/30 overflow-hidden shrink-0">
+                  {logoUrl ? <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" /> : <i className="fa-solid fa-bolt text-[24px] sm:text-[36px] text-pink-400 drop-shadow-md"></i>}
+                </div>
+                <div>
+                  <h1 className="text-xl sm:text-3xl font-black text-white tracking-tighter uppercase">{t('title')}</h1>
+                  <p className="text-pink-300 font-medium text-[10px] sm:text-sm tracking-wide uppercase">{t('subtitle')}</p>
+                  <p className="text-slate-400 text-[10px] sm:text-xs mt-2 max-w-xl">Educational tool for school labs, electronics learning, and personal ESP32 projects. Flash only firmware intended for your exact board.</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto overflow-x-auto no-scrollbar pb-2 sm:pb-0">
+                  <button onClick={() => setLang(lang === 'en' ? 'fil' : 'en')} className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-full font-bold shadow-lg transition-colors border border-slate-700 text-xs shrink-0"><i className="fa-solid fa-language text-pink-300"></i>{lang === 'en' ? 'FIL' : 'EN'}</button>
+                  <button onClick={() => setShowDonateModal(true)} className="flex items-center gap-2 bg-gradient-to-br from-pink-500 to-rose-400 text-white px-4 py-2 rounded-full font-bold shadow-lg transition-transform hover:scale-105 active:scale-95 text-xs shrink-0"><i className="fa-solid fa-heart"></i>{t('donate')}</button>
+                  <a href={GITHUB_REPO_LINK} target="_blank" rel="noopener noreferrer" className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center bg-slate-900 rounded-full border border-slate-700 hover:bg-slate-800 transition-colors shadow-xl shrink-0"><i className="fab fa-github text-slate-400 hover:text-pink-300 transition-colors"></i></a>
+                  <button onClick={() => isAdmin ? setIsAdmin(false) : setShowAdminModal(true)} className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center bg-slate-900 rounded-full border border-slate-700 hover:bg-slate-800 transition-colors shadow-xl shrink-0"><i className={`fa-solid ${isAdmin ? 'fa-lock-open' : 'fa-lock'} text-slate-400 hover:text-pink-300 transition-colors`}></i></button>
+              </div>
+            </header>
+
+            <section className="cltx-hero" aria-label="Firmware flasher introduction">
+              <div className="cltx-hero-copy">
+                <div className="cltx-kicker"><span className="cltx-live-dot"></span> CLTX4 SYSTEMS <span className="cltx-kicker-sep">/</span> WEB FLASHER</div>
+                <h2>FIRMWARE<br/><span>DEPLOYMENT DECK</span></h2>
+                <p>Choose your hardware, pick a compatible library, then load the firmware image. One focused workspace for your ESP devices.</p>
+              </div>
+              <div className="cltx-hero-mark" aria-hidden="true"><span>CLTX</span><strong>4</strong><i className="fa-solid fa-microchip"></i></div>
+              <div className="cltx-flowbar">
+                <div className="cltx-flowstep"><b>01</b><span>HARDWARE</span><i className="fa-solid fa-microchip"></i></div>
+                <div className="cltx-flowline"></div>
+                <div className="cltx-flowstep"><b>02</b><span>LIBRARY</span><i className="fa-solid fa-layer-group"></i></div>
+                <div className="cltx-flowline"></div>
+                <div className="cltx-flowstep"><b>03</b><span>FIRMWARE BIN</span><i className="fa-solid fa-file-arrow-up"></i></div>
+              </div>
+              <div className="cltx-hero-index">SYS // 001<br/>FLASH READY</div>
+            </section>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 cltx-workspace-grid">
+              <div className="lg:col-span-5 space-y-6 cltx-control-column">{isAdmin ? AdminView : UserView}</div>
+              <div className="lg:col-span-7 flex flex-col bg-slate-900/80 backdrop-blur-2xl border border-slate-800 rounded-3xl shadow-2xl h-[400px] sm:h-[640px] overflow-hidden cltx-terminal-panel">
+                <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-900/50">
+                  <div className="flex gap-3 sm:gap-4 overflow-x-auto no-scrollbar">
+                    <button onClick={() => setLogTab('system')} className={`font-bold text-[10px] sm:text-sm transition-colors border-b-2 pb-1 shrink-0 ${logTab === 'system' ? 'text-pink-400 border-pink-400' : 'text-slate-500 border-transparent'}`}>{t('sysLogsTab')}</button>
+                    <button onClick={() => setLogTab('device')} className={`font-bold text-[10px] sm:text-sm transition-colors border-b-2 pb-1 shrink-0 ${logTab === 'device' ? 'text-pink-400 border-pink-400' : 'text-slate-500 border-transparent'}`}>{t('devLogsTab')}</button>
+                  </div>
+                  <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                    {logTab === 'device' && (
+                      <button onClick={toggleSerialMonitor} disabled={isFlashing} className={`flex items-center gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 text-[10px] sm:text-xs font-bold rounded-lg transition-all ${isMonitorRunning ? 'bg-rose-500/10 text-rose-500 hover:bg-rose-500/20' : 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'} disabled:opacity-50`}>
+                        <i className={`fa-solid ${isMonitorRunning ? 'fa-stop' : 'fa-play'}`}></i><span className="hidden sm:inline ml-1">{isMonitorRunning ? t('stopMonitor') : t('startMonitor')}</span>
+                      </button>
+                    )}
+                    <button onClick={() => logTab === 'system' ? setSysLogs([]) : setDevLogs([])} className="flex items-center gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 bg-slate-800 hover:bg-red-900/40 hover:text-red-400 text-[10px] sm:text-xs font-bold rounded-lg transition-all"><i className="fa-solid fa-trash-can"></i><span className="hidden sm:inline ml-1">{t('clearLogs')}</span></button>
+                  </div>
+                </div>
+                <div ref={terminalRef} className="flex-1 p-5 overflow-y-auto font-mono text-[10px] sm:text-xs space-y-1.5 bg-[#050b14] custom-scrollbar select-text">
+                  {currentLogs.length === 0 ? (
+                    <div className="h-full flex items-center justify-center text-slate-700 italic">{t('waitingDevice')}</div>
+                  ) : (
+                    currentLogs.map((log, i) => (
+                      <div key={i} className="flex min-w-0 gap-3 leading-relaxed border-b border-slate-800/20 pb-0.5 animate-in fade-in duration-300">
+                        <span className="text-slate-600 shrink-0 select-none">[{log.time}]</span>
+                        <span className={`min-w-0 break-words [overflow-wrap:anywhere] ${log.type === 'error' ? 'text-red-400 font-bold' : log.type === 'success' ? 'text-emerald-400 font-bold' : log.type === 'warning' ? 'text-pink-300' : 'text-slate-300'}`}>{log.msg}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {showDonateModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+              <div className="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-[2.5rem] p-6 sm:p-8 text-center shadow-2xl relative">
+                <button onClick={() => setShowDonateModal(false)} className="absolute top-6 right-6 text-slate-500 hover:text-white"><i className="fa-solid fa-xmark text-2xl"></i></button>
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-pink-500/20 rounded-full flex items-center justify-center mx-auto mb-6"><i className="fa-solid fa-heart text-3xl sm:text-4xl text-pink-400 animate-pulse"></i></div>
+                <h3 className="text-xl sm:text-2xl font-black text-white mb-2">{t('donateTitle')}</h3>
+                <p className="text-slate-400 text-xs sm:text-sm mb-6 leading-relaxed">{t('donateDesc')}</p>
+                <div className="bg-slate-950 border border-slate-700 rounded-2xl p-5 mb-6">
+                  <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">GCash Number</p>
+                  <p className="text-2xl font-black tracking-wider text-white">{DONATE_GCASH}</p>
+                  <p className="text-xs text-slate-400 mt-2">Support this school / DIY project only if you want to.</p>
+                </div>
+                <button onClick={async () => { try { await navigator.clipboard.writeText(DONATE_GCASH); } catch(e) { const el = document.createElement('textarea'); el.value = DONATE_GCASH; document.body.appendChild(el); el.select(); document.execCommand('copy'); el.remove(); } setCopied(true); setTimeout(() => setCopied(false), 2000); }} className="w-full py-3 rounded-xl font-medium text-pink-300 bg-pink-500/10 hover:bg-pink-500/20 transition-colors border border-pink-500/30 flex items-center justify-center gap-2 active:scale-95">{copied ? <i className="fa-solid fa-circle-check text-emerald-500"></i> : <i className="fa-solid fa-copy"></i>}{copied ? t('copied') : t('copyQr')}</button>
+              </div>
+            </div>
+          )}
+
+          {showAdminModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+              <div className="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl">
+                <h3 className="text-lg sm:text-xl font-bold text-white mb-2">{t('adminConfirm')}</h3>
+                <p className="text-xs sm:text-sm text-slate-400 mb-6">{t('adminDesc')}</p>
+                <form onSubmit={handleAdminLogin} className="space-y-4">
+                  <input type="password" autoFocus placeholder={t('password')} value={adminInput} onChange={e => {setAdminInput(e.target.value); setLoginError(false);}} className={`w-full bg-slate-950 border rounded-xl p-4 text-white outline-none focus:ring-2 transition-all text-sm ${loginError ? 'border-red-500 ring-red-500/20' : 'border-slate-800 focus:ring-pink-400/20'}`} />
+                  {loginError && <p className="text-red-500 text-[10px] font-bold uppercase">{t('wrongPassword')}</p>}
+                  <div className="flex gap-3 pt-2">
+                    <button type="button" onClick={() => setShowAdminModal(false)} className="flex-1 py-3 text-slate-400 font-bold hover:text-white text-xs">{t('cancel')}</button>
+                    <button type="submit" className="flex-1 py-3 bg-pink-500 text-white font-bold rounded-xl hover:bg-pink-400 shadow-lg shadow-pink-500/30 text-xs">{t('unlock')}</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          <style dangerouslySetInnerHTML={{__html: `
+            :root { --deck-red:#ff3046; --deck-red-dark:#8e1022; --deck-cyan:#42e8ff; --deck-ink:#07080d; --deck-panel:#10121a; }
+            html { scroll-behavior:smooth; }
+            body { background:#07080d !important; }
+            body::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px),radial-gradient(ellipse at 12% 0%,rgba(255,48,70,.15),transparent 38%),radial-gradient(ellipse at 92% 78%,rgba(66,232,255,.07),transparent 32%); background-size:36px 36px,36px 36px,auto,auto; }
+            .custom-scrollbar::-webkit-scrollbar { width:6px; height:6px; }
+            .custom-scrollbar::-webkit-scrollbar-thumb { background:linear-gradient(var(--deck-red),#65101d); border-radius:2px; }
+            .no-scrollbar::-webkit-scrollbar { display:none; }
+            .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+            .cltx4-desktop-layout { width:min(100%,1480px); }
+            .cltx4-desktop-layout p { line-height:1.6; text-wrap:pretty; overflow-wrap:anywhere; }
+            .cltx4-desktop-layout label { line-height:1.45; }
+            .cltx4-desktop-layout h1,.cltx4-desktop-layout h2,.cltx4-desktop-layout h3 { line-height:1.15; overflow-wrap:anywhere; }
+            .cltx4-desktop-layout button,.cltx4-desktop-layout a { white-space:normal; }
+            .cltx-header { padding:14px 0 24px; border-bottom:1px solid rgba(255,48,70,.34)!important; }
+            .cltx-header h1 { font-size:clamp(1.25rem,2.8vw,2.15rem)!important; letter-spacing:.08em!important; }
+            .cltx-header > div:first-child > div:first-child { border-radius:15px!important; background:linear-gradient(145deg,#ff3046,#5f0b1b)!important; box-shadow:0 0 0 5px rgba(255,48,70,.06),0 12px 32px rgba(255,48,70,.18)!important; }
+            .cltx-hero { position:relative; isolation:isolate; overflow:hidden; min-height:255px; padding:30px clamp(18px,4vw,46px) 22px; border:1px solid rgba(255,48,70,.35); border-radius:8px 26px 8px 26px; background:linear-gradient(110deg,rgba(20,12,18,.98) 0%,rgba(12,13,20,.97) 58%,rgba(8,19,25,.96) 100%); box-shadow:0 22px 65px rgba(0,0,0,.32),inset 4px 0 0 var(--deck-red); }
+            .cltx-hero::before { content:""; position:absolute; z-index:-1; width:380px; height:380px; right:8%; top:-220px; border:1px solid rgba(255,48,70,.24); border-radius:50%; box-shadow:0 0 0 28px rgba(255,48,70,.025),0 0 0 58px rgba(255,48,70,.02),0 0 70px rgba(255,48,70,.1); }
+            .cltx-hero::after { content:""; position:absolute; z-index:-1; inset:auto 0 0 0; height:4px; background:linear-gradient(90deg,var(--deck-red) 0 28%,var(--deck-cyan) 28% 29%,transparent 29% 100%); opacity:.9; }
+            .cltx-hero-copy { max-width:680px; position:relative; z-index:2; }
+            .cltx-kicker { display:flex; align-items:center; gap:9px; color:#ff6677; font:800 10px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.22em; }
+            .cltx-live-dot { width:7px; height:7px; background:#ff3046; border-radius:50%; box-shadow:0 0 12px #ff3046; }
+            .cltx-kicker-sep { color:#46505d; }
+            .cltx-hero h2 { margin:16px 0 10px; font-size:clamp(2rem,5vw,4.2rem); line-height:.92!important; font-weight:950; letter-spacing:-.055em; color:#fff; }
+            .cltx-hero h2 span { color:transparent; -webkit-text-stroke:1px #ff5367; text-shadow:0 0 26px rgba(255,48,70,.12); }
+            .cltx-hero-copy p { max-width:570px; color:#9ca8b8; font-size:13px; margin:14px 0 20px; }
+            .cltx-hero-mark { position:absolute; right:7%; top:24px; display:flex; align-items:baseline; color:rgba(255,255,255,.035); font-size:clamp(3rem,8vw,7.5rem); line-height:1; font-weight:1000; letter-spacing:-.1em; pointer-events:none; }
+            .cltx-hero-mark strong { color:rgba(255,48,70,.12); }
+            .cltx-hero-mark i { position:absolute; right:2px; bottom:-26px; color:rgba(66,232,255,.22); font-size:2rem; }
+            .cltx-flowbar { display:flex; align-items:center; gap:12px; position:relative; z-index:2; max-width:680px; }
+            .cltx-flowstep { display:flex; align-items:center; gap:8px; color:#dce4ef; font:800 9px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.09em; white-space:nowrap; }
+            .cltx-flowstep b { display:grid; place-items:center; width:25px; height:25px; color:#fff; background:rgba(255,48,70,.15); border:1px solid rgba(255,48,70,.65); transform:rotate(45deg); font-size:9px; }
+            .cltx-flowstep b { text-indent:0; }
+            .cltx-flowstep i { color:var(--deck-cyan); font-size:11px; }
+            .cltx-flowline { height:1px; flex:1; min-width:12px; background:linear-gradient(90deg,rgba(255,48,70,.8),rgba(66,232,255,.25)); }
+            .cltx-hero-index { position:absolute; right:24px; bottom:24px; color:#66717f; text-align:right; font:700 9px/1.8 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.14em; }
+            .cltx-workspace-grid { gap:22px!important; }
+            .cltx-control-column > div { position:relative; border-radius:7px 20px 7px 20px!important; border:1px solid rgba(255,255,255,.09)!important; background:linear-gradient(150deg,rgba(18,20,29,.98),rgba(8,10,16,.98))!important; box-shadow:0 18px 45px rgba(0,0,0,.3),inset 0 1px rgba(255,255,255,.035)!important; }
+            .cltx-control-column > div::before { content:"CONFIGURATION / CONTROL"; display:block; margin:-2px 0 18px; color:#657182; font:700 9px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.16em; }
+            .cltx-control-column label { color:#ff7382!important; letter-spacing:.12em!important; }
+            .cltx-control-column select,.cltx-control-column input:not([type=file]),.cltx-control-column textarea { border-radius:6px!important; border-color:rgba(255,255,255,.13)!important; background:#07090f!important; min-height:45px; }
+            .cltx-control-column select:focus,.cltx-control-column input:focus,.cltx-control-column textarea:focus { border-color:var(--deck-cyan)!important; box-shadow:0 0 0 2px rgba(66,232,255,.1)!important; }
+            .cltx-control-column button { border-radius:6px!important; transition:transform .18s ease,filter .18s ease,box-shadow .18s ease; }
+            .cltx-control-column button:hover { filter:brightness(1.12); }
+            .cltx-terminal-panel { border-radius:7px 20px 7px 20px!important; border:1px solid rgba(66,232,255,.19)!important; background:#080b11!important; box-shadow:0 20px 55px rgba(0,0,0,.35),inset 0 1px rgba(255,255,255,.035)!important; }
+            .cltx-terminal-panel > div:first-child { background:linear-gradient(90deg,rgba(255,48,70,.1),rgba(66,232,255,.035))!important; border-bottom:1px solid rgba(66,232,255,.16)!important; }
+            .cltx-terminal-panel > div:first-child::after { content:"LIVE DEVICE CONSOLE"; color:#657182; font:700 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.13em; margin-left:auto; padding-left:10px; }
+            .cltx-terminal-panel .font-mono { background:radial-gradient(ellipse at 50% 0%,rgba(66,232,255,.035),transparent 50%),#05080d!important; }
+            .cltx-terminal-panel .font-mono > div { border-bottom-color:rgba(66,232,255,.07)!important; }
+            .cltx-terminal-panel button { border-radius:5px!important; }
+            [class*="text-pink-"] { color:#ff5367!important; }
+            [class*="border-pink-"] { border-color:rgba(255,48,70,.42)!important; }
+            [class*="bg-pink-"] { background-color:#bd152b!important; }
+            [class*="from-pink-"] { --tw-gradient-from:#ff3046 var(--tw-gradient-from-position)!important; --tw-gradient-to:rgb(255 48 70 / 0%) var(--tw-gradient-to-position)!important; }
+            [class*="to-rose-"] { --tw-gradient-to:#8e1022 var(--tw-gradient-to-position)!important; }
+            @media (max-width:700px) {
+              .cltx4-command-deck { padding:14px!important; }
+              .cltx-hero { padding:23px 18px 18px; min-height:0; }
+              .cltx-hero-mark { right:8px; top:20px; opacity:.65; }
+              .cltx-hero h2 { font-size:clamp(2rem,10vw,3.2rem); }
+              .cltx-hero-copy p { max-width:94%; font-size:12px; }
+              .cltx-flowbar { gap:6px; }
+              .cltx-flowstep { gap:5px; font-size:7px; letter-spacing:.025em; }
+              .cltx-flowstep b { width:21px; height:21px; font-size:8px; }
+              .cltx-flowstep i { display:none; }
+              .cltx-flowline { min-width:5px; }
+              .cltx-hero-index { display:none; }
+              .cltx-terminal-panel > div:first-child::after { display:none; }
+            }
+            @media (min-width:1024px) {
+              .cltx4-desktop-layout { padding-left:2rem; padding-right:2rem; }
+              .cltx4-desktop-layout .grid { align-items:start; }
+              .cltx4-desktop-layout .font-mono { overflow-wrap:anywhere; }
+              .cltx-control-column { position:sticky; top:18px; }
+            }
+            @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { animation-duration:.01ms!important; transition-duration:.01ms!important; } }
+          `}} />
+        </div>
+      );
+    }
+
+    const rootNode = document.getElementById('root');
+    if (!rootNode._reactRoot) { rootNode._reactRoot = ReactDOM.createRoot(rootNode); }
+    rootNode._reactRoot.render(<App />);
+  </script>
+</body>
+</html>
